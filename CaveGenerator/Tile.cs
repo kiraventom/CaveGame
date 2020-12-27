@@ -2,16 +2,65 @@
 
 namespace CaveGenerator
 {
-	public abstract class Tile
+	public class Tile
 	{
+		/// <summary>
+		/// Empty tile
+		/// </summary>
+		/// <param name="occupier"></param>
+		internal Tile(Actor occupier = null)
+		{
+			IsBorder = false;
+			IsObstacle = false;
+			Occupier = occupier;
+		}
+
+		/// <summary>
+		/// Obstacle tile
+		/// </summary>
+		/// <param name="isBorder"></param>
+		internal Tile(bool isBorder)
+		{
+			IsObstacle = true;
+			IsBorder = isBorder;
+		}
+
+		private bool _isObstacle { get; set; }
+		public bool IsObstacle
+		{
+			get => _isObstacle;
+			set
+			{
+				if (this.IsBorder)
+					throw new InvalidOperationException("Cannot change border");
+				
+				_isObstacle = value;
+			}
+		}
+
+		public bool IsBorder { get; }
+
+		public Actor Occupier { get; internal set; }
+		public bool IsOccupied => Occupier is not null;
+
 		public uint X => this.Location.X;
 		public uint Y => this.Location.Y;
 		public Location Location { get; init; }
 
-		public Tile Left { get; private set; }
-		public Tile Up { get; private set; }
-		public Tile Right { get; private set; }
-		public Tile Bottom { get; private set; }
+		internal Tile Left { get; private set; }
+		internal Tile Up { get; private set; }
+		internal Tile Right { get; private set; }
+		internal Tile Bottom { get; private set; }
+
+		internal bool TryDestroyObstacle()
+		{
+			if (!this.IsObstacle || this.IsBorder)
+				return false;
+
+			this.IsObstacle = false;
+			ChangeTracker.ReportChange(this.Location);
+			return true;
+		}
 
 		internal static void ConnectAllTiles(Cave cave)
 		{
@@ -27,22 +76,6 @@ namespace CaveGenerator
 				}
 			}
 		}
-	}
-
-	public class Obstacle : Tile
-	{
-	
-	}
-
-	public class Border : Obstacle
-	{
-
-	}
-
-	public class EmptyTile : Tile
-	{
-		public Actor Occupier { get; set; }
-		public bool IsOccupied => Occupier is not null;
 	}
 
 	public struct Location

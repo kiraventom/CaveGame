@@ -9,10 +9,10 @@ namespace ConsoleUI
 		{
 			return tile switch
 			{
-				Obstacle => '\u2588',
-				EmptyTile et when !et.IsOccupied => ' ',
-				EmptyTile et when et.Occupier is Player => 'O',
-				EmptyTile et when et.Occupier is Enemy => '8',
+				Tile t when t.IsObstacle => '\u2588',
+				Tile t when !t.IsOccupied => ' ',
+				Tile t when t.Occupier is Player => 'O',
+				Tile t when t.Occupier is Enemy => '8',
 
 				_ => throw new NotImplementedException()
 			};

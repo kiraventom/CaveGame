@@ -25,7 +25,8 @@ namespace ConsoleUI
 			while (true)
 			{
 				var cki = Console.ReadKey(true);
-			    HandlePlayerMovement(cki);
+			    var dir = HandleControls(cki);
+				GameEngine.HandleRequest(dir);
 
 				var updates = ChangeTracker.GetUpdates();
 				foreach (var update in updates)
@@ -36,9 +37,7 @@ namespace ConsoleUI
 			}
 		}
 
-		enum Direction { None, Left, Up, Right, Down };
-
-		static bool HandlePlayerMovement(ConsoleKeyInfo cki)
+		static Direction HandleControls(ConsoleKeyInfo cki)
 		{
 			var dir = cki.Key switch
 			{
@@ -50,26 +49,7 @@ namespace ConsoleUI
 				_ => Direction.None
 			};
 
-			if (dir != Direction.None)
-			{
-				Tile current = Player.OccupiedTile;
-				var moveTo = dir switch
-				{
-					Direction.Left => current.Left,
-					Direction.Up => current.Up,
-					Direction.Right => current.Right,
-					Direction.Down => current.Bottom,
-
-					_ => throw new NotImplementedException()
-				};
-
-				if (moveTo is not null)
-				{
-					bool didMove = Player.Move(moveTo);
-				}
-			}
-
-			return dir != Direction.None;
+			return dir;
 		}
 
 		static void DrawCave(Cave cave)

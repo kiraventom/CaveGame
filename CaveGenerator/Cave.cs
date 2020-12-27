@@ -29,7 +29,7 @@ namespace CaveGenerator
 			{
 				for (uint y = 0; y < Size.Height; ++y)
 				{
-					Tiles[x, y] = new EmptyTile() { Location = new Location(x, y) };
+					Tiles[x, y] = new Tile() { Location = new Location(x, y) };
 				}
 			}
 		}
@@ -42,7 +42,7 @@ namespace CaveGenerator
 				{
 					if (x == 0 || x == Size.Width - 1 || y == 0 || y == Size.Height - 1)
 					{
-						Tile tile = new Border
+						Tile tile = new Tile(true)
 						{
 							Location = new Location(x, y)
 						};
@@ -61,7 +61,7 @@ namespace CaveGenerator
 					bool isObstacle = Generator.RND.Next(0, 4) == 0;
 					if (isObstacle)
 					{
-						Tiles[x, y] = new Obstacle() { Location = new Location(x, y) };
+						Tiles[x, y] = new Tile(false) { Location = new Location(x, y) };
 					}
 				}
 			}

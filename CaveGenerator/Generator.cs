@@ -12,15 +12,15 @@ namespace CaveGenerator
 
 		internal static Player CreatePlayer(Cave cave)
 		{
-			EmptyTile playerTile = null;
+			Tile playerTile = null;
 			for (int x = 0; x < cave.Size.Width; ++x)
 			{
 				for (int y = 0; y < cave.Size.Height; ++y)
 				{
 					var tile = cave.Tiles[x, y];
-					if (tile is EmptyTile et && !et.IsOccupied)
+					if (!tile.IsBorder && !tile.IsOccupied)
 					{
-						playerTile = et;
+						playerTile = tile;
 						break;
 					}
 				}
