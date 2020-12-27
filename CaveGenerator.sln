@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleUI", "ConsoleUI\ConsoleUI.csproj", "{86557F49-D1A0-421C-9EAA-D952BC40C12C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaveGenerator", "CaveGenerator\CaveGenerator.csproj", "{A33A01DC-27ED-431C-8B97-64CFD37E0F61}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{86557F49-D1A0-421C-9EAA-D952BC40C12C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86557F49-D1A0-421C-9EAA-D952BC40C12C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86557F49-D1A0-421C-9EAA-D952BC40C12C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86557F49-D1A0-421C-9EAA-D952BC40C12C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A33A01DC-27ED-431C-8B97-64CFD37E0F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A33A01DC-27ED-431C-8B97-64CFD37E0F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A33A01DC-27ED-431C-8B97-64CFD37E0F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A33A01DC-27ED-431C-8B97-64CFD37E0F61}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F13DB9D2-76A6-4246-8033-0381D204D817}
+	EndGlobalSection
+EndGlobal
