@@ -50,8 +50,8 @@ namespace CaveGenerator
 			shouldProceed = true;
 			// находим кратчайший путь к игроку, если бы не было препятствий
 			RecursiveFindPath(thisTile, playerLoc, noObstaclePath, GameEngine.Cave.Size.Width * GameEngine.Cave.Size.Height, true); 
-			// устанавливаем (его длину * 1.5) как верхнюю границу - если длина пути в рекурсивном методе будет больше, метод остановится
-			uint estimatedMaxPathLength = (uint)Math.Ceiling(noObstaclePath.Count * 1.5);
+			// устанавливаем (его длину * 2) как верхнюю границу - если длина пути в рекурсивном методе будет больше, метод остановится
+			uint estimatedMaxPathLength = (uint)Math.Ceiling(noObstaclePath.Count * 2.0);
 
 			// "включаем" рекурсивный метод
 			shouldProceed = true;
@@ -111,7 +111,7 @@ namespace CaveGenerator
 
 			if (startingFrom.IsOccupied && startingFrom.Occupier is Player)
 			{
-				return startingFrom.Occupier is Player;
+				return true;
 			}
 
 			if (path.Count > maxLength)

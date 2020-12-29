@@ -8,7 +8,9 @@ namespace CaveGenerator
 {
 	public static class GameEngine
 	{
-		static GameEngine()
+		static GameEngine() { }
+
+		public static void init()
 		{
 			Cave = Generator.CreateCave(new Size(30, 30));
 			Player = Generator.CreateActor<Player>();
@@ -41,8 +43,8 @@ namespace CaveGenerator
 			}
 		}
 
-		public static Cave Cave { get; }
-		public static Player Player { get; }
-		public static IEnumerable<Enemy> Enemies { get; }
+		public static Cave Cave { get; private set; }
+		public static Player Player { get; private set; }
+		public static IEnumerable<Enemy> Enemies { get; private set; }
 	}
 }

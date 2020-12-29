@@ -8,16 +8,21 @@ namespace ConsoleUI
 		const int cr = 2; // console ratio
 
 		static Cave Cave => GameEngine.Cave;
-		static Player Player => GameEngine.Player;
 
 		static void Main(string[] args)
 		{
 			Console.CursorVisible = false;
+			Console.ForegroundColor = ConsoleColor.Black;
+			Console.BackgroundColor = ConsoleColor.White;
+			Console.WindowWidth = 65;
+			Console.WindowHeight = 32;
 
-			DrawCave(Cave);
-			StartGameCycle();
-
-			return;
+			while (true)
+			{
+				GameEngine.init();
+				DrawCave(Cave);
+				StartGameCycle();
+			}
 		}
 
 		static void StartGameCycle()
@@ -25,6 +30,12 @@ namespace ConsoleUI
 			while (true)
 			{
 				var cki = Console.ReadKey(true);
+				if (cki.Key == ConsoleKey.R)
+				{
+					Console.Beep();
+					return;
+				}
+
 			    var dir = HandleControls(cki);
 				GameEngine.HandleMoveRequest(dir);
 
