@@ -10,39 +10,43 @@ namespace CaveGenerator
 
 	public abstract class Actor
 	{
-		public Location Location { get; }
 		internal Tile OccupiedTile { get; set; }
 
-		internal bool MoveTo(Tile moveTo)
+		internal virtual bool MoveTo(Tile moveTo)
 		{
-			if (moveTo is null || moveTo.IsOccupied)
+			if (moveTo is null || moveTo.IsOccupied || moveTo.IsObstacle)
 				return false;
 
-			if (!moveTo.IsObstacle)
-			{
-				var before = this.OccupiedTile;
-				this.OccupiedTile.Occupier = null;
-				this.OccupiedTile = moveTo;
-				this.OccupiedTile.Occupier = this;
+			var before = this.OccupiedTile;
+			this.OccupiedTile.Occupier = null;
+			this.OccupiedTile = moveTo;
+			this.OccupiedTile.Occupier = this;
 
-				ChangeTracker.ReportChange(before.Location);
-				ChangeTracker.ReportChange(moveTo.Location);
+			ChangeTracker.ReportChange(before.Location);
+			ChangeTracker.ReportChange(moveTo.Location);
 
-				return true;
-			}
-			else
-			{
-				moveTo.TryDestroyObstacle();
-				return false;
-			}
+			return true;
 		}
 	}
 
 	public class Player : Actor
 	{
+		internal override bool MoveTo(Tile moveTo)
+		{
+			bool didMove = base.MoveTo(moveTo);
+			if (!didMove && moveTo.IsObstacle)
+			{
+				moveTo.TryDestroyObstacle();
+			}
+
+			return didMove;
+		}
 	}
 
 	public class Enemy : Actor
 	{
+		public Enemy() => Intellect = new Intellect(this);
+
+		internal Intellect Intellect { get; }
 	}
 }

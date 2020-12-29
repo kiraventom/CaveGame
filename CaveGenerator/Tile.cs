@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CaveGenerator
 {
@@ -8,8 +9,9 @@ namespace CaveGenerator
 		/// Empty tile
 		/// </summary>
 		/// <param name="occupier"></param>
-		internal Tile(Actor occupier = null)
+		internal Tile(Location loc, Actor occupier = null)
 		{
+			Location = loc;
 			IsBorder = false;
 			IsObstacle = false;
 			Occupier = occupier;
@@ -19,13 +21,13 @@ namespace CaveGenerator
 		/// Obstacle tile
 		/// </summary>
 		/// <param name="isBorder"></param>
-		internal Tile(bool isBorder)
+		internal Tile(Location loc, bool isBorder)
 		{
+			Location = loc;
 			IsObstacle = true;
 			IsBorder = isBorder;
 		}
 
-		private bool _isObstacle { get; set; }
 		public bool IsObstacle
 		{
 			get => _isObstacle;
@@ -45,12 +47,28 @@ namespace CaveGenerator
 
 		public uint X => this.Location.X;
 		public uint Y => this.Location.Y;
-		public Location Location { get; init; }
+		public Location Location { get; }
 
-		internal Tile Left { get; private set; }
-		internal Tile Up { get; private set; }
-		internal Tile Right { get; private set; }
-		internal Tile Bottom { get; private set; }
+		internal IEnumerable<Tile> Neighbours => new [] {this.Left, this.Top, this.Right, this.Bottom };
+
+		private bool _isObstacle { get; set; }
+		private Tile Left { get; set; }
+		private Tile Top { get; set; }
+		private Tile Right { get; set; }
+		private Tile Bottom { get; set; }
+
+		internal Tile GetNeighbour(Direction dir)
+		{
+			return dir switch
+			{
+				Direction.Left => this.Left,
+				Direction.Up => this.Top,
+				Direction.Right => this.Right,
+				Direction.Down => this.Bottom,
+
+				_ => throw new NotImplementedException()
+			};
+		}
 
 		internal bool TryDestroyObstacle()
 		{
@@ -72,7 +90,7 @@ namespace CaveGenerator
 					tile.Left = x == 0 ? null : cave.Tiles[x - 1, y];
 					tile.Bottom = y == 0 ? null : cave.Tiles[x, y - 1];
 					tile.Right = x == cave.Size.Width - 1 ? null : cave.Tiles[x + 1, y];
-					tile.Up = y == cave.Size.Height - 1 ? null : cave.Tiles[x, y + 1];
+					tile.Top = y == cave.Size.Height - 1 ? null : cave.Tiles[x, y + 1];
 				}
 			}
 		}
@@ -89,10 +107,15 @@ namespace CaveGenerator
 		public uint X { get; }
 		public uint Y { get; }
 
-		public Location AsConsoleLocation(Size size, byte cr)
+		public Location AsConsoleLocation(Size size, byte cr = 2)
 		{
-			return new Location((uint)(this.X * cr), size.Height - 1 - this.Y);
+			// double the X to make field look square (usually console font ratio is 1/2)
+			// reverse the Y because we want Y = 0 be on the bottom and console Y = 0 is on the top
+			return new Location(this.X * cr, size.Height - 1 - this.Y);
 		}
+
+		public static bool operator ==(Location loc1, Location loc2) => loc1.X == loc2.X && loc1.Y == loc2.Y;
+		public static bool operator !=(Location loc1, Location loc2) => loc1.X != loc2.X || loc1.Y != loc2.Y;
 	}
 
 	public struct Size

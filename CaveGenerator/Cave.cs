@@ -5,22 +5,26 @@ namespace CaveGenerator
 {
 	public class Cave 
 	{
-		internal Cave(Size size)
+		internal Cave(Size size, IEnumerable<Location> obstacles = null)
 		{
 			Size = size;
 			Tiles = new Tile[Size.Width, Size.Height];
-			GenerateTiles();
+			GenerateBase();
+			if (obstacles is null)
+				CreateObstacles();
+			else
+				CreateObstacles(obstacles);
+
 			Tile.ConnectAllTiles(this);
 		}
 
 		public Size Size { get; }
 		public Tile[,] Tiles { get; }
 																							
-		private void GenerateTiles()													
+		private void GenerateBase()													
 		{
 			CreateEmpty();
 			CreateBorders();
-			CreateObstacles();
 		}
 
 		private void CreateEmpty()
@@ -29,7 +33,7 @@ namespace CaveGenerator
 			{
 				for (uint y = 0; y < Size.Height; ++y)
 				{
-					Tiles[x, y] = new Tile() { Location = new Location(x, y) };
+					Tiles[x, y] = new Tile(new Location(x, y));
 				}
 			}
 		}
@@ -42,10 +46,7 @@ namespace CaveGenerator
 				{
 					if (x == 0 || x == Size.Width - 1 || y == 0 || y == Size.Height - 1)
 					{
-						Tile tile = new Tile(true)
-						{
-							Location = new Location(x, y)
-						};
+						Tile tile = new Tile(new Location(x, y), true);
 						Tiles[x, y] = tile;
 					}
 				}
@@ -61,9 +62,17 @@ namespace CaveGenerator
 					bool isObstacle = Generator.RND.Next(0, 4) == 0;
 					if (isObstacle)
 					{
-						Tiles[x, y] = new Tile(false) { Location = new Location(x, y) };
+						Tiles[x, y] = new Tile(new Location(x, y), false);
 					}
 				}
+			}
+		}
+
+		private void CreateObstacles(IEnumerable<Location> obstacles)
+		{
+			foreach (var obstacle in obstacles)
+			{
+				Tiles[obstacle.X, obstacle.Y] = new Tile(new Location(obstacle.X, obstacle.Y), false);
 			}
 		}
 	}																						

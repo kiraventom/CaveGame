@@ -26,7 +26,7 @@ namespace ConsoleUI
 			{
 				var cki = Console.ReadKey(true);
 			    var dir = HandleControls(cki);
-				GameEngine.HandleRequest(dir);
+				GameEngine.HandleMoveRequest(dir);
 
 				var updates = ChangeTracker.GetUpdates();
 				foreach (var update in updates)

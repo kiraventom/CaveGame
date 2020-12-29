@@ -10,34 +10,42 @@ namespace CaveGenerator
 
 		internal static Random RND = new Random();
 
-		internal static Player CreatePlayer(Cave cave)
+		internal static IEnumerable<T> CreateActors<T>(uint amount = 0) where T : Actor, new()
 		{
-			Tile playerTile = null;
-			for (int x = 0; x < cave.Size.Width; ++x)
+			amount = amount == 0 ? (uint)RND.Next(1, 5) : amount;
+			T[] actors = new T[amount];
+			for (int i = 0; i < amount; ++i)
 			{
-				for (int y = 0; y < cave.Size.Height; ++y)
+				actors[i] = CreateActor<T>();
+			}
+
+			return actors;
+		}
+
+		internal static T CreateActor<T>(Location? loc = null) where T : Actor, new()
+		{
+			var cave = GameEngine.Cave;
+			Tile actorTile;
+
+			if (loc.HasValue)
+			{
+				actorTile = cave.Tiles[loc.Value.X, loc.Value.Y];
+			}
+			else
+			{
+				do
 				{
-					var tile = cave.Tiles[x, y];
-					if (!tile.IsBorder && !tile.IsOccupied)
-					{
-						playerTile = tile;
-						break;
-					}
+					uint x = (uint)RND.Next(0, (int)cave.Size.Width);
+					uint y = (uint)RND.Next(0, (int)cave.Size.Height);
+					actorTile = cave.Tiles[x, y];
 				}
-
-				if (playerTile is not null)
-					break;
+				while (actorTile.IsObstacle || actorTile.IsOccupied);
 			}
 
-			if (playerTile is null)
-			{
-				throw new ArgumentException("Not enough empty tiles in cave");
-			}
+			T actor = new T() { OccupiedTile = actorTile };
+			actor.OccupiedTile.Occupier = actor;
 
-			Player player = new Player() { OccupiedTile = playerTile };
-			player.OccupiedTile.Occupier = player;
-			
-			return player;
+			return actor;
 		}
 	}
 }
