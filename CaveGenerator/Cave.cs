@@ -15,6 +15,7 @@ namespace CaveGenerator
 			else
 				CreateObstacles(obstacles);
 
+			CreateTreasure();
 			Tile.ConnectAllTiles(this);
 		}
 
@@ -73,6 +74,20 @@ namespace CaveGenerator
 			foreach (var obstacle in obstacles)
 			{
 				Tiles[obstacle.X, obstacle.Y] = new Tile(new Location(obstacle.X, obstacle.Y), false);
+			}
+		}
+
+		private void CreateTreasure()
+		{
+			while (true)
+			{
+				int x = Generator.RND.Next(1, (int)Size.Width - 1);
+				int y = Generator.RND.Next(1, (int)Size.Height - 1);
+				if (Tiles[x, y].IsObstacle && !Tiles[x, y].IsBorder)
+				{
+					Tiles[x, y].IsTreasure = true;
+					return;
+				}
 			}
 		}
 	}																						

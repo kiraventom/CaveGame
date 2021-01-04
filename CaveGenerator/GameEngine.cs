@@ -15,6 +15,7 @@ namespace CaveGenerator
 			Cave = Generator.CreateCave(new Size(30, 30));
 			Player = Generator.CreateActor<Player>();
 			Enemies = Generator.CreateActors<Enemy>(0);
+			IsTreasureFound = false;
 		}
 
 		public static void HandleMoveRequest(Direction direction, bool shouldBreak = false)
@@ -29,6 +30,11 @@ namespace CaveGenerator
 					if (shouldBreak)
 					{
 						bool didDestroy = Player.TryDestroyAt(moveTo);
+						if (didDestroy && moveTo.IsTreasure)
+						{
+							IsTreasureFound = true;
+							return;
+						}
 					}
 					else
 					{
@@ -53,5 +59,6 @@ namespace CaveGenerator
 		public static Cave Cave { get; private set; }
 		public static Player Player { get; private set; }
 		public static IEnumerable<Enemy> Enemies { get; private set; }
+		public static bool IsTreasureFound { get; private set; }
 	}
 }

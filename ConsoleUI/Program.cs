@@ -36,14 +36,23 @@ namespace ConsoleUI
 					return;
 				}
 
-				var dir = HandleControls(cki);
-				GameEngine.HandleMoveRequest(dir, cki.Modifiers.HasFlag(ConsoleModifiers.Shift));
-
-				var updates = ChangeTracker.GetUpdates();
-				foreach (var update in updates)
+				if (!GameEngine.IsTreasureFound)
 				{
-					var tile = Cave.Tiles[update.X, update.Y];
-					DrawTile(tile);
+					var dir = HandleControls(cki);
+					GameEngine.HandleMoveRequest(dir, cki.Modifiers.HasFlag(ConsoleModifiers.Shift));
+
+					var updates = ChangeTracker.GetUpdates();
+					foreach (var update in updates)
+					{
+						var tile = Cave.Tiles[update.X, update.Y];
+						DrawTile(tile);
+					}
+				}
+				else
+				{
+					string congratsMsg = "You won!";
+					Console.SetCursorPosition(30 - congratsMsg.Length / 2, 15);
+					Console.Write(congratsMsg);
 				}
 			}
 		}
@@ -78,9 +87,11 @@ namespace ConsoleUI
 		static void DrawTile(Tile tile)
 		{
 			char tileChar = CharTable.GetTileChar(tile);
+			var color = CharTable.GetTileColor(tile);
 			string tileStr = new string(tileChar, cr);
 
 			var consoleLoc = tile.Location.AsConsoleLocation(GameEngine.Cave.Size, 2);
+			Console.ForegroundColor = color;
 			Console.SetCursorPosition((int)consoleLoc.X, (int)consoleLoc.Y);
 			Console.Write(tileStr);
 		}

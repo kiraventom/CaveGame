@@ -18,6 +18,17 @@ namespace ConsoleUI
 				_ => throw new NotImplementedException()
 			};
 		}
+
+		public static ConsoleColor GetTileColor(Tile tile)
+		{
+			return tile switch
+			{
+				Tile t when !t.IsVisible => ConsoleColor.Black,
+				Tile t when t.IsTreasure => ConsoleColor.Yellow,
+
+				_ => ConsoleColor.Black
+			};
+		}
 	}
 
 }
