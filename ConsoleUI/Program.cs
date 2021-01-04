@@ -33,12 +33,11 @@ namespace ConsoleUI
 				var cki = Console.ReadKey(true);
 				if (cki.Key == ConsoleKey.R)
 				{
-					Console.Beep();
 					return;
 				}
 
 				var dir = HandleControls(cki);
-				GameEngine.HandleMoveRequest(dir);
+				GameEngine.HandleMoveRequest(dir, cki.Modifiers.HasFlag(ConsoleModifiers.Shift));
 
 				var updates = ChangeTracker.GetUpdates();
 				foreach (var update in updates)

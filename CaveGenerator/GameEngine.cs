@@ -12,15 +12,12 @@ namespace CaveGenerator
 
 		public static void Initialize()
 		{
-			if (Cave is null && Player is null && Enemies is null)
-			{
-				Cave = Generator.CreateCave(new Size(30, 30));
-				Player = Generator.CreateActor<Player>();
-				Enemies = Generator.CreateActors<Enemy>(0);
-			}
+			Cave = Generator.CreateCave(new Size(30, 30));
+			Player = Generator.CreateActor<Player>();
+			Enemies = Generator.CreateActors<Enemy>(0);
 		}
 
-		public static void HandleMoveRequest(Direction direction)
+		public static void HandleMoveRequest(Direction direction, bool shouldBreak = false)
 		{
 			if (direction != Direction.None)
 			{
@@ -29,7 +26,14 @@ namespace CaveGenerator
 
 				if (moveTo is not null)
 				{
-					bool didMove = Player.MoveTo(moveTo);
+					if (shouldBreak)
+					{
+						bool didDestroy = Player.TryDestroyAt(moveTo);
+					}
+					else
+					{
+						bool didMove = Player.MoveTo(moveTo);
+					}
 				}
 			}
 

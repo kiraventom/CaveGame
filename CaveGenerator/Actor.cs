@@ -91,13 +91,20 @@ namespace CaveGenerator
 		internal override bool MoveTo(Tile moveTo)
 		{
 			bool didMove = base.MoveTo(moveTo);
-			if (!didMove && moveTo.IsObstacle)
+			UpdateFog();
+			return didMove;
+		}
+
+		internal bool TryDestroyAt(Tile destroy)
+		{
+			bool result = false;
+			if (destroy.IsObstacle && !destroy.IsBorder)
 			{
-				 moveTo.TryDestroyObstacle();
+				result = destroy.TryDestroyObstacle();
 			}
 
 			UpdateFog();
-			return didMove;
+			return result;
 		}
 
 		private void UpdateFog()
