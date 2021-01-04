@@ -10,7 +10,8 @@ namespace CaveGenerator
 
 	public abstract class Actor
 	{
-		internal Tile OccupiedTile { get; set; }
+		virtual internal Tile OccupiedTile { get; set; }
+		protected abstract uint ViewDistance { get; }
 
 		internal virtual bool MoveTo(Tile moveTo)
 		{
@@ -27,25 +28,98 @@ namespace CaveGenerator
 
 			return true;
 		}
+
+		internal IEnumerable<Tile> GetVisibleTiles()
+		{
+			var square = new Geometry.Square(this.OccupiedTile.Location, ViewDistance);
+			var squareLocs = square.ToLocations();
+			List<Geometry.Line> visionLines = new List<Geometry.Line>();
+			foreach (var squareLoc in squareLocs)
+			{
+				var line = new Geometry.Line(this.OccupiedTile.Location, squareLoc);
+				visionLines.Add(line);
+			}
+
+			HashSet<Tile> visibleTiles = new HashSet<Tile>();
+			foreach (var visionLine in visionLines)
+			{
+				IList<Location> visionLineLocs = visionLine.ToLocations();
+				for (int i = 0; i < visionLineLocs.Count; ++i)
+				{
+					var tile = GameEngine.Cave.Tiles[visionLineLocs[i].X, visionLineLocs[i].Y];
+					visibleTiles.Add(tile);
+
+					if (i != 0)
+					{
+						var currentLoc = visionLineLocs[i];
+						var prevLoc = visionLineLocs[i - 1];
+						var currentTile = GameEngine.Cave.Tiles[currentLoc.X, currentLoc.Y];
+						var prevTile = GameEngine.Cave.Tiles[prevLoc.X, prevLoc.Y];
+						var commonNeighbours = currentTile.Neighbours.Intersect(prevTile.Neighbours);
+						if (commonNeighbours.Count() == 2 && commonNeighbours.All(n => n.IsObstacle))
+						{
+							visibleTiles.Remove(currentTile);
+							break;
+						}
+					}
+
+					if (tile.IsObstacle)
+						break;
+				}
+			}
+
+			return visibleTiles;
+		}
 	}
 
 	public class Player : Actor
 	{
+		internal override Tile OccupiedTile
+		{
+			get => base.OccupiedTile;
+			set
+			{
+				var wasNull = base.OccupiedTile is null;
+				base.OccupiedTile = value;
+				if (wasNull)
+					UpdateFog();
+			}
+		}
+
+		protected override uint ViewDistance => 3;
+
 		internal override bool MoveTo(Tile moveTo)
 		{
 			bool didMove = base.MoveTo(moveTo);
 			if (!didMove && moveTo.IsObstacle)
 			{
-				moveTo.TryDestroyObstacle();
+				 moveTo.TryDestroyObstacle();
 			}
 
+			UpdateFog();
 			return didMove;
+		}
+
+		private void UpdateFog()
+		{
+			var visibleTiles = GetVisibleTiles();
+
+			foreach (var tile in visibleTiles)
+			{
+				if (!tile.IsVisible)
+				{
+					tile.IsVisible = true;
+					ChangeTracker.ReportChange(tile.Location);
+				}
+			}
 		}
 	}
 
 	public class Enemy : Actor
 	{
 		public Enemy() => Intellect = new Intellect(this);
+
+		protected override uint ViewDistance => 3;
 
 		internal Intellect Intellect { get; }
 	}

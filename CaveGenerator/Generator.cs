@@ -6,13 +6,16 @@ namespace CaveGenerator
 {
 	internal static class Generator
 	{
-		internal static Cave CreateCave(Size size) => new Cave(size);
+		internal static Cave CreateCave(Size size)
+		{
+			return new Cave(size);
+		}
 
 		internal static Random RND = new Random();
 
-		internal static IEnumerable<T> CreateActors<T>(uint amount = 0) where T : Actor, new()
+		internal static IEnumerable<T> CreateActors<T>(int amount = -1) where T : Actor, new()
 		{
-			amount = amount == 0 ? (uint)RND.Next(1, 5) : amount;
+			amount = amount == -1 ? RND.Next(1, 5) : amount;
 			T[] actors = new T[amount];
 			for (int i = 0; i < amount; ++i)
 			{

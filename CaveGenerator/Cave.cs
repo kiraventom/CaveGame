@@ -59,7 +59,7 @@ namespace CaveGenerator
 			{
 				for (uint y = 1; y < Size.Height - 1; ++y)
 				{
-					bool isObstacle = Generator.RND.Next(0, 4) == 0;
+					bool isObstacle = Generator.RND.Next(0, 2) == 0;
 					if (isObstacle)
 					{
 						Tiles[x, y] = new Tile(new Location(x, y), false);

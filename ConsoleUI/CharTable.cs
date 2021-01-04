@@ -9,6 +9,7 @@ namespace ConsoleUI
 		{
 			return tile switch
 			{
+				Tile t when !t.IsVisible => '\u2592',
 				Tile t when t.IsObstacle => '\u2588',
 				Tile t when !t.IsOccupied => ' ',
 				Tile t when t.Occupier is Player => 'O',

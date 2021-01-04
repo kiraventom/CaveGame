@@ -19,25 +19,31 @@ namespace CaveGenerator
 
 		internal Tile GetTileToMoveTo()
 		{
-			if (PlayerMoved || !PathToPlayer.Any())
+			Tile tileToMoveTo = null;
+
+			// если игрок в поле зрения
+			if (this.AttachedTo.GetVisibleTiles().Any(t => t.IsOccupied && t.Occupier is Player))
 			{
-				CalculatePath();
-				LastPlayerLocation = GameEngine.Player.OccupiedTile.Location;
+				if (PlayerMoved || !PathToPlayer.Any())
+				{
+					CalculatePath();
+					LastPlayerLocation = GameEngine.Player.OccupiedTile.Location;
+				}
+
+				if (PathToPlayer.Any())
+				{
+					var tile = PathToPlayer[0];
+					PathToPlayer.RemoveAt(0);
+					return GameEngine.Cave.Tiles[tile.X, tile.Y];
+				}
+				else
+				{
+					// проверяем, рядом ли игрок
+					tileToMoveTo = AttachedTo.OccupiedTile.Neighbours.FirstOrDefault(t => t == GameEngine.Player.OccupiedTile);
+				}
 			}
 
-			if (PathToPlayer.Any())
-			{
-				var tile = PathToPlayer[0];
-				PathToPlayer.RemoveAt(0);
-				return GameEngine.Cave.Tiles[tile.X, tile.Y];
-			}
-			else
-			{
-				// проверяем, рядом ли игрок
-				var tile = AttachedTo.OccupiedTile.Neighbours.FirstOrDefault(t => t == GameEngine.Player.OccupiedTile);
-				// если рядом, атакуем его, если нет -- двигаемся на рандомную соседнюю клетку
-				return tile ?? this.AttachedTo.OccupiedTile.Neighbours.ElementAt(Generator.RND.Next(4));
-			}
+			return tileToMoveTo ?? this.AttachedTo.OccupiedTile.Neighbours.ElementAt(Generator.RND.Next(4));
 		}
 
 		private void CalculatePath()

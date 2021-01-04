@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using CaveGenerator;
 
 namespace ConsoleUI
@@ -19,7 +20,7 @@ namespace ConsoleUI
 
 			while (true)
 			{
-				GameEngine.init();
+				GameEngine.Initialize();
 				DrawCave(Cave);
 				StartGameCycle();
 			}
@@ -36,7 +37,7 @@ namespace ConsoleUI
 					return;
 				}
 
-			    var dir = HandleControls(cki);
+				var dir = HandleControls(cki);
 				GameEngine.HandleMoveRequest(dir);
 
 				var updates = ChangeTracker.GetUpdates();

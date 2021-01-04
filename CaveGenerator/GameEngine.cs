@@ -10,11 +10,14 @@ namespace CaveGenerator
 	{
 		static GameEngine() { }
 
-		public static void init()
+		public static void Initialize()
 		{
-			Cave = Generator.CreateCave(new Size(30, 30));
-			Player = Generator.CreateActor<Player>();
-			Enemies = Generator.CreateActors<Enemy>(2);
+			if (Cave is null && Player is null && Enemies is null)
+			{
+				Cave = Generator.CreateCave(new Size(30, 30));
+				Player = Generator.CreateActor<Player>();
+				Enemies = Generator.CreateActors<Enemy>(0);
+			}
 		}
 
 		public static void HandleMoveRequest(Direction direction)

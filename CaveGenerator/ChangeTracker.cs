@@ -16,6 +16,6 @@ namespace CaveGenerator
 			Changes.Add(loc);
 		}
 
-		private static readonly List<Location> Changes = new List<Location>();
+		private static readonly HashSet<Location> Changes = new HashSet<Location>();
 	}
 }
