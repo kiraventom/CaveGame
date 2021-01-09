@@ -11,6 +11,7 @@ namespace ConsoleUI
 			{
 				Tile t when !t.IsVisible => '\u2592',
 				Tile t when t.IsObstacle => '\u2588',
+				Tile t when t.HasBomb => 'X',
 				Tile t when !t.IsOccupied => ' ',
 				Tile t when t.Occupier is Player => 'O',
 				Tile t when t.Occupier is Enemy => '8',

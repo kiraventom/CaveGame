@@ -15,7 +15,7 @@ namespace CaveGenerator
 
 		internal virtual bool MoveTo(Tile moveTo)
 		{
-			if (moveTo is null || moveTo.IsOccupied || moveTo.IsObstacle)
+			if (moveTo is null || moveTo.IsOccupied || moveTo.IsObstacle || moveTo.HasBomb)
 				return false;
 
 			var before = this.OccupiedTile;
@@ -32,9 +32,9 @@ namespace CaveGenerator
 		internal IEnumerable<Tile> GetVisibleTiles()
 		{
 			var square = new Geometry.Square(this.OccupiedTile.Location, ViewDistance);
-			var squareLocs = square.ToLocations();
+			var borderLocs = square.Border.ToLocations();
 			List<Geometry.Line> visionLines = new List<Geometry.Line>();
-			foreach (var squareLoc in squareLocs)
+			foreach (var squareLoc in borderLocs)
 			{
 				var line = new Geometry.Line(this.OccupiedTile.Location, squareLoc);
 				visionLines.Add(line);
@@ -95,15 +95,16 @@ namespace CaveGenerator
 			return didMove;
 		}
 
-		internal bool TryDestroyAt(Tile destroy)
+		internal bool TryPlaceBombAt(Tile placeBombTo)
 		{
 			bool result = false;
-			if (destroy.IsObstacle && !destroy.IsBorder)
+			if (!placeBombTo.IsObstacle && !placeBombTo.IsOccupied)
 			{
-				result = destroy.TryDestroyObstacle();
+				placeBombTo.Bomb = new Bomb(placeBombTo.Location, 2);
+				placeBombTo.Bomb.Exploded += (_, _) => this.UpdateFog();
+				result = true;
 			}
 
-			UpdateFog();
 			return result;
 		}
 

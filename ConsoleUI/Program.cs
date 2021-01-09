@@ -7,6 +7,7 @@ namespace ConsoleUI
 	class Program
 	{
 		const int cr = 2; // console ratio
+		static int easterEggCounter = 0;
 
 		static Cave Cave => GameEngine.Cave;
 
@@ -36,6 +37,17 @@ namespace ConsoleUI
 					return;
 				}
 
+				// easter egg
+				if (cki.Key == ConsoleKey.F9)
+				{
+					++easterEggCounter;
+					if (easterEggCounter == 3)
+					{
+						easterEggCounter = 0;
+						GameEngine.ActivateEgg();
+					}
+				}
+
 				if (!GameEngine.IsTreasureFound)
 				{
 					var dir = HandleControls(cki);
@@ -48,7 +60,8 @@ namespace ConsoleUI
 						DrawTile(tile);
 					}
 				}
-				else
+
+				if (GameEngine.IsTreasureFound)
 				{
 					string congratsMsg = "You won!";
 					Console.SetCursorPosition(30 - congratsMsg.Length / 2, 15);

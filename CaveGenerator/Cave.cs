@@ -15,12 +15,13 @@ namespace CaveGenerator
 			else
 				CreateObstacles(obstacles);
 
-			CreateTreasure();
+			Treasure = CreateTreasure();
 			Tile.ConnectAllTiles(this);
 		}
 
 		public Size Size { get; }
 		public Tile[,] Tiles { get; }
+		public Tile Treasure { get; }
 																							
 		private void GenerateBase()													
 		{
@@ -77,7 +78,7 @@ namespace CaveGenerator
 			}
 		}
 
-		private void CreateTreasure()
+		private Tile CreateTreasure()
 		{
 			while (true)
 			{
@@ -86,7 +87,7 @@ namespace CaveGenerator
 				if (Tiles[x, y].IsObstacle && !Tiles[x, y].IsBorder)
 				{
 					Tiles[x, y].IsTreasure = true;
-					return;
+					return Tiles[x, y];
 				}
 			}
 		}

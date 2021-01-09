@@ -15,10 +15,10 @@ namespace CaveGenerator
 			Cave = Generator.CreateCave(new Size(30, 30));
 			Player = Generator.CreateActor<Player>();
 			Enemies = Generator.CreateActors<Enemy>(0);
-			IsTreasureFound = false;
+			Bombs = new HashSet<Bomb>();
 		}
 
-		public static void HandleMoveRequest(Direction direction, bool shouldBreak = false)
+		public static void HandleMoveRequest(Direction direction, bool putBomb = false)
 		{
 			if (direction != Direction.None)
 			{
@@ -27,13 +27,13 @@ namespace CaveGenerator
 
 				if (moveTo is not null)
 				{
-					if (shouldBreak)
+					if (putBomb)
 					{
-						bool didDestroy = Player.TryDestroyAt(moveTo);
-						if (didDestroy && moveTo.IsTreasure)
+						bool didPlace = Player.TryPlaceBombAt(moveTo);
+						if (didPlace)
 						{
-							IsTreasureFound = true;
-							return;
+							Bombs.Add(moveTo.Bomb);
+							moveTo.Bomb.Exploded += (s, _) => Bombs.Remove(s as Bomb);
 						}
 					}
 					else
@@ -46,6 +46,18 @@ namespace CaveGenerator
 			Tick();
 		}
 
+		public static void ActivateEgg()
+		{
+			for (uint x = 0; x < Cave.Size.Width; ++x)
+			{
+				for (uint y = 0; y < Cave.Size.Height; ++y)
+				{
+					Cave.Tiles[x, y].IsVisible = !Cave.Tiles[x, y].IsVisible;
+					ChangeTracker.ReportChange(new Location(x, y));
+				}
+			}
+		}
+
 		private static void Tick()
 		{
 			foreach (var enemy in Enemies)
@@ -54,11 +66,17 @@ namespace CaveGenerator
 
 				enemy.MoveTo(tile);
 			}
+
+			foreach (var bomb in Bombs)
+			{
+				bomb.Tick();
+			}	
 		}
 
 		public static Cave Cave { get; private set; }
 		public static Player Player { get; private set; }
 		public static IEnumerable<Enemy> Enemies { get; private set; }
-		public static bool IsTreasureFound { get; private set; }
+		private static HashSet<Bomb> Bombs { get; set; }
+		public static bool IsTreasureFound => !Cave.Treasure.IsObstacle;
 	}
 }

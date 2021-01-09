@@ -132,10 +132,46 @@ namespace CaveGenerator.Geometry
 			int y_top = (int)center.Y + (int)halfSide;
 			int y_bottom = (int)center.Y - (int)halfSide;
 
-			Top = new Line(new Location(x_left, y_top), new Location(x_right, y_top));
-			Left = new Line(new Location(x_left, y_bottom), new Location(x_left, y_top));
-			Bottom = new Line(new Location(x_left, y_bottom), new Location(x_right, y_bottom));
-			Right = new Line(new Location(x_right, y_bottom), new Location(x_right, y_top));
+			TopLeft = new Location(x_left, y_top);
+			BottomLeft = new Location(x_left, y_bottom);
+			TopRight = new Location(x_right, y_top);
+			BottomRight = new Location(x_right, y_bottom);
+
+			Border = new SquareBorder(TopLeft, BottomLeft, TopRight, BottomRight);
+		}
+
+		public SquareBorder Border { get; }
+
+		public Location TopLeft { get; }
+		public Location BottomLeft { get; }
+		public Location TopRight { get; }
+		public Location BottomRight { get; }
+
+		public IEnumerable<Location> GetAngles() => new[] { TopLeft, BottomLeft, TopRight, BottomRight };
+
+		internal IList<Location> ToLocations()
+		{
+			HashSet<Location> locations = new HashSet<Location>();
+			for (uint x = TopLeft.X; x <= TopRight.X; ++x)
+			{
+				for (uint y = BottomLeft.Y; y <= TopLeft.Y; ++y)
+				{
+					locations.Add(new Location(x, y));
+				}
+			}
+
+			return locations.ToList();
+		}
+	}
+
+	public struct SquareBorder
+	{
+		public SquareBorder(Location topLeft, Location bottomLeft, Location topRight, Location bottomRight)
+		{
+			Top = new Line(topLeft, topRight);
+			Left = new Line(bottomLeft, topLeft);
+			Bottom = new Line(bottomLeft, bottomRight);
+			Right = new Line(bottomRight, topRight);
 		}
 
 		public Line Top { get; }
