@@ -14,7 +14,7 @@ namespace CaveGenerator
 		{
 			Cave = Generator.CreateCave(new Size(30, 30));
 			Player = Generator.CreateActor<Player>();
-			Enemies = Generator.CreateActors<Enemy>(0);
+			Enemies = Generator.CreateActors<Enemy>(1);
 			Bombs = new HashSet<Bomb>();
 		}
 

@@ -100,7 +100,7 @@ namespace CaveGenerator
 			bool result = false;
 			if (!placeBombTo.IsObstacle && !placeBombTo.IsOccupied)
 			{
-				placeBombTo.Bomb = new Bomb(placeBombTo.Location, 2);
+				placeBombTo.Bomb = new Bomb(placeBombTo.Location, 10);
 				placeBombTo.Bomb.Exploded += (_, _) => this.UpdateFog();
 				result = true;
 			}
