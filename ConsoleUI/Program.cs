@@ -18,6 +18,7 @@ namespace ConsoleUI
 			Console.BackgroundColor = ConsoleColor.White;
 			Console.WindowWidth = 65;
 			Console.WindowHeight = 32;
+			Console.Title = GameEngine.Seed.ToString();
 
 			while (true)
 			{

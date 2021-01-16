@@ -10,6 +10,8 @@ namespace CaveGenerator
 	{
 		static GameEngine() { }
 
+		public static int Seed => Generator.Seed;
+
 		public static void Initialize()
 		{
 			Cave = Generator.CreateCave(new Size(30, 30));
@@ -52,7 +54,7 @@ namespace CaveGenerator
 			{
 				for (uint y = 0; y < Cave.Size.Height; ++y)
 				{
-					Cave.Tiles[x, y].IsVisible = !Cave.Tiles[x, y].IsVisible;
+					Cave.Tiles[x, y].IsVisible = true;
 					ChangeTracker.ReportChange(new Location(x, y));
 				}
 			}
