@@ -52,7 +52,7 @@ namespace ConsoleUI
 				{
 					var dir = HandleControls(cki);
 					GameEngine.HandleMoveRequest(dir, cki.Modifiers.HasFlag(ConsoleModifiers.Shift));
-
+					Console.Title = "Bombs: " + GameEngine.Player.Inventory.Count.ToString();
 					var updates = ChangeTracker.GetUpdates();
 					foreach (var update in updates)
 					{

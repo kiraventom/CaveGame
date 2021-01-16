@@ -26,6 +26,7 @@ namespace ConsoleUI
 			{
 				Tile t when !t.IsVisible => ConsoleColor.Black,
 				Tile t when t.IsTreasure => ConsoleColor.Yellow,
+				Tile t when t.HasBomb && t.Bomb.IsActivated => ConsoleColor.Red,
 
 				_ => ConsoleColor.Black
 			};

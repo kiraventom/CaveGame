@@ -45,7 +45,7 @@ namespace CaveGenerator
 		public bool IsTreasure { get; internal set; }
 		public Actor Occupier { get; internal set; }
 		public bool IsOccupied => Occupier is not null;
-		internal Bomb Bomb { get; set; }
+		public Bomb Bomb { get; internal set; }
 		public bool HasBomb => Bomb is not null;
 
 

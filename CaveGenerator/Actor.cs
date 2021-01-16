@@ -15,7 +15,7 @@ namespace CaveGenerator
 
 		internal virtual bool MoveTo(Tile moveTo)
 		{
-			if (moveTo is null || moveTo.IsOccupied || moveTo.IsObstacle || moveTo.HasBomb)
+			if (moveTo is null || moveTo.IsOccupied || moveTo.IsObstacle || moveTo.HasBomb && moveTo.Bomb.IsActivated)
 				return false;
 
 			var before = this.OccupiedTile;
@@ -74,6 +74,18 @@ namespace CaveGenerator
 
 	public class Player : Actor
 	{
+		public Player()
+		{
+			_inventory = new List<Bomb>()
+			{
+				new Bomb(2),
+				new Bomb(2),
+			};
+		}
+
+		public IReadOnlyList<Bomb> Inventory => _inventory;
+		private List<Bomb> _inventory { get; }
+
 		internal override Tile OccupiedTile
 		{
 			get => base.OccupiedTile;
@@ -86,11 +98,17 @@ namespace CaveGenerator
 			}
 		}
 
-		protected override uint ViewDistance => 3;
+		protected override uint ViewDistance => 4;
 
 		internal override bool MoveTo(Tile moveTo)
 		{
 			bool didMove = base.MoveTo(moveTo);
+			if (moveTo.HasBomb && !moveTo.Bomb.IsActivated)
+			{
+				this._inventory.Add(moveTo.Bomb);
+				moveTo.Bomb = null;
+			}
+
 			UpdateFog();
 			return didMove;
 		}
@@ -100,8 +118,15 @@ namespace CaveGenerator
 			bool result = false;
 			if (!placeBombTo.IsObstacle && !placeBombTo.IsOccupied)
 			{
-				placeBombTo.Bomb = new Bomb(placeBombTo.Location, 2);
-				placeBombTo.Bomb.Exploded += (_, _) => this.UpdateFog();
+				Bomb bomb = null;
+				if (Inventory.Count > 0)
+					bomb = Inventory[0];
+				else
+					return result;
+
+				_inventory.Remove(bomb);
+				bomb.Exploded += (_, _) => this.UpdateFog();
+				bomb.Put(placeBombTo);
 				result = true;
 			}
 

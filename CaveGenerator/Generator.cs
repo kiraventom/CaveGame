@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CaveGenerator
 {
@@ -48,7 +49,7 @@ namespace CaveGenerator
 					uint y = (uint)RND.Next(0, (int)cave.Size.Height);
 					actorTile = cave.Tiles[x, y];
 				}
-				while (actorTile.IsObstacle || actorTile.IsOccupied);
+				while (actorTile.IsObstacle || actorTile.IsOccupied || actorTile.HasBomb || actorTile.Neighbours.All(t => t.IsObstacle));
 			}
 
 			T actor = new T() { OccupiedTile = actorTile };

@@ -15,6 +15,7 @@ namespace CaveGenerator
 				CreateObstacles(obstacles);
 
 			Treasure = CreateTreasure();
+			GenerateBombs();
 			Tile.ConnectAllTiles(this);
 		}
 
@@ -87,6 +88,26 @@ namespace CaveGenerator
 				{
 					Tiles[x, y].IsTreasure = true;
 					return Tiles[x, y];
+				}
+			}
+		}
+
+		private void GenerateBombs()
+		{
+			for (uint x = 1; x < Size.Width - 1; ++x)
+			{
+				for (uint y = 1; y < Size.Height - 1; ++y)
+				{
+					bool isBomb = Generator.RND.Next(0, 25) == 0;
+					if (isBomb)
+					{
+						var tile = Tiles[x, y];
+						if (tile.HasBomb || tile.IsObstacle || tile.IsOccupied)
+							continue;
+
+						Bomb bomb = new Bomb(2);
+						bomb.Put(tile, false);
+					}
 				}
 			}
 		}
