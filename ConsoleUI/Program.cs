@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading;
-using CaveGenerator;
+﻿using CaveGenerator;
+using System;
 
 namespace ConsoleUI
 {

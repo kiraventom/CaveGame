@@ -1,5 +1,5 @@
-﻿using System;
-using CaveGenerator;
+﻿using CaveGenerator;
+using System;
 
 namespace ConsoleUI
 {

@@ -11,10 +11,7 @@ namespace CaveGenerator
 			return list;
 		}
 
-		internal static void ReportChange(Location loc)
-		{
-			Changes.Add(loc);
-		}
+		internal static void ReportChange(Location loc) => Changes.Add(loc);
 
 		private static readonly HashSet<Location> Changes = new HashSet<Location>();
 	}
