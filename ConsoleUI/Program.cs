@@ -103,10 +103,24 @@ namespace ConsoleUI
 			var color = CharTable.GetTileColor(tile);
 			string tileStr = new string(tileChar, cr);
 
-			var consoleLoc = tile.Location.AsConsoleLocation(GameEngine.Cave.Size, 2);
+			var consoleLoc = ToConsoleLocation(tile.Location, GameEngine.Cave.Size, 2);
 			Console.ForegroundColor = color;
 			Console.SetCursorPosition((int)consoleLoc.X, (int)consoleLoc.Y);
 			Console.Write(tileStr);
+		}
+
+		static Location ToConsoleLocation(Location loc, Size size, byte cr = 2)
+		{
+			// double the X to make field look square (usually console font ratio is 1/2)
+			// reverse the Y because we want Y = 0 be on the bottom and console Y = 0 is on the top
+			return new Location(loc.X * cr, size.Height - 1 - loc.Y);
+		}
+
+		static Location ToConsoleLocation(LocationF loc, Size size, byte cr = 2)
+		{
+			// double the X to make field look square (usually console font ratio is 1/2)
+			// reverse the Y because we want Y = 0 be on the bottom and console Y = 0 is on the top
+			return new Location((uint)(Math.Floor(loc.X) * cr), (uint)(size.Height - 1 - Math.Floor(loc.Y)));
 		}
 	}
 

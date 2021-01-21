@@ -19,13 +19,6 @@ namespace CaveGenerator
 		public uint X { get; }
 		public uint Y { get; }
 
-		public Location AsConsoleLocation(Size size, byte cr = 2)
-		{
-			// double the X to make field look square (usually console font ratio is 1/2)
-			// reverse the Y because we want Y = 0 be on the bottom and console Y = 0 is on the top
-			return new Location(this.X * cr, size.Height - 1 - this.Y);
-		}
-
 		public override bool Equals(object obj) => obj is Location location && this == location;
 		public override int GetHashCode() => HashCode.Combine(this.X, this.Y);
 
