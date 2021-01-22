@@ -11,6 +11,7 @@ namespace ConsoleUI
 			{
 				Tile t when !t.IsVisible => '\u2592',
 				Tile t when t.IsObstacle => '\u2588',
+				Tile t when t.HasTreasure => '*',
 				Tile t when t.HasBomb => 'X',
 				Tile t when !t.IsOccupied => ' ',
 				Tile t when t.Occupier is Player => 'O',
@@ -25,7 +26,7 @@ namespace ConsoleUI
 			return tile switch
 			{
 				Tile t when !t.IsVisible => ConsoleColor.Black,
-				Tile t when t.IsTreasure => ConsoleColor.Yellow,
+				Tile t when t.HasTreasure => ConsoleColor.DarkMagenta,
 				Tile t when t.HasBomb && t.Bomb.IsActivated => ConsoleColor.Red,
 
 				_ => ConsoleColor.Black

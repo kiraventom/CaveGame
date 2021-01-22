@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace CaveGenerator
 {
@@ -84,9 +85,9 @@ namespace CaveGenerator
 			{
 				int x = Generator.RND.Next(1, (int)Size.Width - 1);
 				int y = Generator.RND.Next(1, (int)Size.Height - 1);
-				if (Tiles[x, y].IsObstacle && !Tiles[x, y].IsBorder)
+				if (!Tiles[x, y].IsObstacle && !Tiles[x, y].IsOccupied && !Tiles[x,y].HasBomb)
 				{
-					Tiles[x, y].IsTreasure = true;
+					Tiles[x, y].HasTreasure = true;
 					return Tiles[x, y];
 				}
 			}

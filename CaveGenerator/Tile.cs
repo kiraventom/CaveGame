@@ -42,26 +42,19 @@ namespace CaveGenerator
 
 		public bool IsBorder { get; }
 		public bool IsVisible { get; internal set; }
-		public bool IsTreasure { get; internal set; }
+		public bool HasTreasure { get; internal set; }
 		public Actor Occupier { get; internal set; }
 		public bool IsOccupied => Occupier is not null;
 		public Bomb Bomb { get; internal set; }
 		public bool HasBomb => Bomb is not null;
 
-
 		public uint X => this.Location.X;
 		public uint Y => this.Location.Y;
 		public Location Location { get; }
 
-		internal IEnumerable<Tile> Neighbours => new [] {this.Left, this.Top, this.Right, this.Bottom };
+		public IEnumerable<Tile> Neighbours => new [] {this.Left, this.Top, this.Right, this.Bottom };
 
-		private bool _isObstacle { get; set; }
-		private Tile Left { get; set; }
-		private Tile Top { get; set; }
-		private Tile Right { get; set; }
-		private Tile Bottom { get; set; }
-
-		internal Tile GetNeighbour(Direction dir)
+		public Tile GetNeighbour(Direction dir)
 		{
 			return dir switch
 			{
@@ -73,6 +66,12 @@ namespace CaveGenerator
 				_ => throw new NotImplementedException()
 			};
 		}
+
+		private bool _isObstacle { get; set; }
+		private Tile Left { get; set; }
+		private Tile Top { get; set; }
+		private Tile Right { get; set; }
+		private Tile Bottom { get; set; }
 
 		internal bool TryDestroyObstacle()
 		{

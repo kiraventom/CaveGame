@@ -10,7 +10,7 @@ namespace CaveGenerator
 
 	public abstract class Actor
 	{
-		virtual internal Tile OccupiedTile { get; set; }
+		virtual public Tile OccupiedTile { get; internal set; }
 		protected abstract uint ViewDistance { get; }
 
 		internal virtual bool MoveTo(Tile moveTo)
@@ -86,10 +86,10 @@ namespace CaveGenerator
 		public IReadOnlyList<Bomb> Inventory => _inventory;
 		private List<Bomb> _inventory { get; }
 
-		internal override Tile OccupiedTile
+		public override Tile OccupiedTile
 		{
 			get => base.OccupiedTile;
-			set
+			internal set
 			{
 				var wasNull = base.OccupiedTile is null;
 				base.OccupiedTile = value;
@@ -109,6 +109,11 @@ namespace CaveGenerator
 				moveTo.Bomb = null;
 			}
 
+			if (moveTo.HasTreasure)
+			{
+				moveTo.HasTreasure = false;
+			}
+
 			UpdateFog();
 			return didMove;
 		}
@@ -116,7 +121,7 @@ namespace CaveGenerator
 		internal bool TryPlaceBombAt(Tile placeBombTo)
 		{
 			bool result = false;
-			if (!placeBombTo.IsObstacle && !placeBombTo.IsOccupied)
+			if (!placeBombTo.IsObstacle && !placeBombTo.IsOccupied && !placeBombTo.HasTreasure)
 			{
 				Bomb bomb = null;
 				if (Inventory.Count > 0)
