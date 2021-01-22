@@ -75,6 +75,6 @@ namespace CaveGenerator
 		public static Player Player { get; private set; }
 		public static IEnumerable<Enemy> Enemies { get; private set; }
 		private static HashSet<Bomb> Bombs { get; set; }
-		public static bool IsTreasureFound => !Cave.Treasure?.HasTreasure ?? false;
+		public static bool IsTreasureFound => !Cave?.Treasure?.HasTreasure ?? false;
 	}
 }
