@@ -1,5 +1,6 @@
 ﻿using CaveGenerator;
 using System;
+using System.Threading;
 
 namespace ConsoleUI
 {
