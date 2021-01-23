@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace CaveGenerator
 {
@@ -15,6 +16,7 @@ namespace CaveGenerator
 				CreateObstacles(obstacles);
 
 			Treasure = CreateTreasure();
+			GenerateBombs();
 			Tile.ConnectAllTiles(this);
 		}
 
@@ -83,10 +85,30 @@ namespace CaveGenerator
 			{
 				int x = Generator.RND.Next(1, (int)Size.Width - 1);
 				int y = Generator.RND.Next(1, (int)Size.Height - 1);
-				if (Tiles[x, y].IsObstacle && !Tiles[x, y].IsBorder)
+				if (!Tiles[x, y].IsObstacle && !Tiles[x, y].IsOccupied && !Tiles[x,y].HasBomb)
 				{
-					Tiles[x, y].IsTreasure = true;
+					Tiles[x, y].HasTreasure = true;
 					return Tiles[x, y];
+				}
+			}
+		}
+
+		private void GenerateBombs()
+		{
+			for (uint x = 1; x < Size.Width - 1; ++x)
+			{
+				for (uint y = 1; y < Size.Height - 1; ++y)
+				{
+					bool isBomb = Generator.RND.Next(0, 25) == 0;
+					if (isBomb)
+					{
+						var tile = Tiles[x, y];
+						if (tile.HasBomb || tile.IsObstacle || tile.IsOccupied)
+							continue;
+
+						Bomb bomb = new Bomb(2);
+						bomb.Put(tile, false);
+					}
 				}
 			}
 		}

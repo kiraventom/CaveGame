@@ -10,12 +10,12 @@ namespace CaveGenerator
 
 	public abstract class Actor
 	{
-		virtual internal Tile OccupiedTile { get; set; }
+		virtual public Tile OccupiedTile { get; internal set; }
 		protected abstract uint ViewDistance { get; }
 
 		internal virtual bool MoveTo(Tile moveTo)
 		{
-			if (moveTo is null || moveTo.IsOccupied || moveTo.IsObstacle || moveTo.HasBomb)
+			if (moveTo is null || moveTo.IsOccupied || moveTo.IsObstacle || moveTo.HasBomb && moveTo.Bomb.IsActivated)
 				return false;
 
 			var before = this.OccupiedTile;
@@ -74,10 +74,22 @@ namespace CaveGenerator
 
 	public class Player : Actor
 	{
-		internal override Tile OccupiedTile
+		public Player()
+		{
+			_inventory = new List<Bomb>()
+			{
+				new Bomb(2),
+				new Bomb(2),
+			};
+		}
+
+		public IReadOnlyList<Bomb> Inventory => _inventory;
+		private List<Bomb> _inventory { get; }
+
+		public override Tile OccupiedTile
 		{
 			get => base.OccupiedTile;
-			set
+			internal set
 			{
 				var wasNull = base.OccupiedTile is null;
 				base.OccupiedTile = value;
@@ -86,11 +98,22 @@ namespace CaveGenerator
 			}
 		}
 
-		protected override uint ViewDistance => 3;
+		protected override uint ViewDistance => 4;
 
 		internal override bool MoveTo(Tile moveTo)
 		{
 			bool didMove = base.MoveTo(moveTo);
+			if (moveTo.HasBomb && !moveTo.Bomb.IsActivated)
+			{
+				this._inventory.Add(moveTo.Bomb);
+				moveTo.Bomb = null;
+			}
+
+			if (moveTo.HasTreasure)
+			{
+				moveTo.HasTreasure = false;
+			}
+
 			UpdateFog();
 			return didMove;
 		}
@@ -98,10 +121,17 @@ namespace CaveGenerator
 		internal bool TryPlaceBombAt(Tile placeBombTo)
 		{
 			bool result = false;
-			if (!placeBombTo.IsObstacle && !placeBombTo.IsOccupied)
+			if (!placeBombTo.IsObstacle && !placeBombTo.IsOccupied && !placeBombTo.HasTreasure)
 			{
-				placeBombTo.Bomb = new Bomb(placeBombTo.Location, 10);
-				placeBombTo.Bomb.Exploded += (_, _) => this.UpdateFog();
+				Bomb bomb = null;
+				if (Inventory.Count > 0)
+					bomb = Inventory[0];
+				else
+					return result;
+
+				_inventory.Remove(bomb);
+				bomb.Exploded += (_, _) => this.UpdateFog();
+				bomb.Put(placeBombTo);
 				result = true;
 			}
 

@@ -2,23 +2,30 @@
 
 namespace CaveGenerator
 {
-	internal class Bomb
+	public class Bomb
 	{
-		public Bomb(Location loc, uint ticks)
+		internal Bomb(uint ticks)
 		{
-			TileWithBomb = GameEngine.Cave.Tiles[loc.X, loc.Y];
 			Counter = ticks;
-			ChangeTracker.ReportChange(loc);
 		}
 
-		public Tile TileWithBomb { get; }
-		public uint Counter { get; private set; }
+		internal Tile TileWithBomb { get; private set; }
+		internal uint Counter { get; private set; }
+		public bool IsActivated { get; private set; }
 
-		public event EventHandler Exploded;
+		internal event EventHandler Exploded;
 
-		public bool Tick()
+		internal void Put(Tile tile, bool activate = true)
 		{
-			if (GameEngine.Cave.Tiles[TileWithBomb.X, TileWithBomb.Y].HasBomb)
+			TileWithBomb = tile;
+			TileWithBomb.Bomb = this;
+			IsActivated = activate;
+			ChangeTracker.ReportChange(tile.Location);
+		}
+
+		internal bool Tick()
+		{
+			if (IsActivated)
 			{
 				if (Counter == 0)
 				{
@@ -43,8 +50,10 @@ namespace CaveGenerator
 				tile.TryDestroyObstacle();
 			}
 
-			TileWithBomb.Bomb = null;
 			ChangeTracker.ReportChange(TileWithBomb.Location);
+			TileWithBomb.Bomb = null;
+			this.TileWithBomb = null;
+			IsActivated = false;
 			Exploded.Invoke(this, EventArgs.Empty);
 		}
 	}
