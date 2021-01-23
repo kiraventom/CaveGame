@@ -31,20 +31,24 @@ namespace ConsoleUI
 		{
 			while (true)
 			{
-				var cki = Console.ReadKey(true);
-				if (cki.Key == ConsoleKey.R)
+				ConsoleKeyInfo cki = new ConsoleKeyInfo();
+				if (Console.KeyAvailable)
 				{
-					return;
-				}
-
-				// easter egg
-				if (cki.Key == ConsoleKey.F9)
-				{
-					++easterEggCounter;
-					if (easterEggCounter == 3)
+					cki = Console.ReadKey(true);
+					if (cki.Key == ConsoleKey.R)
 					{
-						easterEggCounter = 0;
-						GameEngine.ActivateEgg();
+						return;
+					}
+
+					// easter egg
+					if (cki.Key == ConsoleKey.F9)
+					{
+						++easterEggCounter;
+						if (easterEggCounter == 3)
+						{
+							easterEggCounter = 0;
+							GameEngine.ActivateEgg();
+						}
 					}
 				}
 
@@ -67,6 +71,8 @@ namespace ConsoleUI
 					Console.SetCursorPosition(30 - congratsMsg.Length / 2, 15);
 					Console.Write(congratsMsg);
 				}
+
+				Thread.Sleep(100);
 			}
 		}
 
