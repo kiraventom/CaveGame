@@ -1,6 +1,5 @@
 ﻿using CaveGenerator;
 using System;
-using System.Threading;
 
 namespace ConsoleUI
 {
@@ -32,24 +31,20 @@ namespace ConsoleUI
 		{
 			while (true)
 			{
-				ConsoleKeyInfo cki = new ConsoleKeyInfo();
-				if (Console.KeyAvailable)
+				var cki = Console.ReadKey(true);
+				if (cki.Key == ConsoleKey.R)
 				{
-					cki = Console.ReadKey(true);
-					if (cki.Key == ConsoleKey.R)
-					{
-						return;
-					}
+					return;
+				}
 
-					// easter egg
-					if (cki.Key == ConsoleKey.F9)
+				// easter egg
+				if (cki.Key == ConsoleKey.F9)
+				{
+					++easterEggCounter;
+					if (easterEggCounter == 3)
 					{
-						++easterEggCounter;
-						if (easterEggCounter == 3)
-						{
-							easterEggCounter = 0;
-							GameEngine.ActivateEgg();
-						}
+						easterEggCounter = 0;
+						GameEngine.Easter_OpenMap();
 					}
 				}
 
@@ -72,8 +67,6 @@ namespace ConsoleUI
 					Console.SetCursorPosition(30 - congratsMsg.Length / 2, 15);
 					Console.Write(congratsMsg);
 				}
-
-				Thread.Sleep(100);
 			}
 		}
 
