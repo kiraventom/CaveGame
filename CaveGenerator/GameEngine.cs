@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace CaveGenerator
 {
@@ -87,6 +88,32 @@ namespace CaveGenerator
 		public static Player Player { get; private set; }
 		public static IEnumerable<Enemy> Enemies { get; private set; }
 		private static HashSet<Bomb> Bombs { get; set; }
-		public static bool IsTreasureFound => !Cave?.Treasure?.HasTreasure ?? false;
+		public static bool DidWin => !Cave?.Treasure?.HasTreasure ?? false;
+		public static bool DidLose
+		{
+			get
+			{
+				// если у игрока есть бомбы
+				if (Player.Inventory.Any()) 
+					return false;
+
+				// если есть несобранная бомба в зоне видимости
+				if (Bombs.Any(b => b.TileWithBomb.IsVisible))
+					return false;
+
+				// если есть неоткрытая пустая клетка рядом с открытой
+				for (int x = 1; x < Cave.Size.Width - 1; ++x)
+				{
+					for (int y = 1; y < Cave.Size.Height - 1; ++y)
+					{
+						Tile tile = Cave.Tiles[x, y];
+						if (tile.IsVisible && !tile.IsObstacle && tile.Neighbours.Any(n => !n.IsVisible))
+							return false;
+					}
+				}
+				
+				return true;
+			}
+		}
 	}
 }
