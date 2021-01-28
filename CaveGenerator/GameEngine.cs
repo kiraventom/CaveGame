@@ -94,7 +94,7 @@ namespace CaveGenerator
 			get
 			{
 				// если у игрока есть бомбы
-				if (Player.Inventory.Any()) 
+				if (Player?.Inventory?.Any() ?? true) 
 					return false;
 
 				// если есть несобранная бомба в зоне видимости
@@ -111,7 +111,9 @@ namespace CaveGenerator
 							return false;
 					}
 				}
-				
+
+				Cave.Treasure.IsVisible = true;
+				ChangeTracker.ReportChange(Cave.Treasure.Location);
 				return true;
 			}
 		}
