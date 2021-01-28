@@ -44,7 +44,7 @@ namespace CaveGenerator
 			Tick();
 		}
 
-		public static void ActivateEgg()
+		public static void Easter_OpenMap()
 		{
 			for (uint x = 0; x < Cave.Size.Width; ++x)
 			{
@@ -52,6 +52,18 @@ namespace CaveGenerator
 				{
 					Cave.Tiles[x, y].IsVisible = true;
 					ChangeTracker.ReportChange(new Location(x, y));
+				}
+			}
+		}
+
+		public static void Easter_GetBombs()
+		{
+			foreach (var neighbour in Player.OccupiedTile.Neighbours)
+			{
+				if (!neighbour.IsObstacle && !neighbour.IsOccupied && !neighbour.HasBomb && !neighbour.HasTreasure)
+				{
+					Bomb bomb = new Bomb(2);
+					bomb.Put(neighbour, false);
 				}
 			}
 		}

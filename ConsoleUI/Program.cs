@@ -44,7 +44,7 @@ namespace ConsoleUI
 					if (easterEggCounter == 3)
 					{
 						easterEggCounter = 0;
-						GameEngine.ActivateEgg();
+						GameEngine.Easter_OpenMap();
 					}
 				}
 
