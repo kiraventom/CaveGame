@@ -95,11 +95,18 @@ namespace WpfUI
 				DrawTile(tile, e);
 			}
 
-			if (GameEngine.IsTreasureFound)
+			if (GameEngine.DidWin)
 			{
 				var canvas = e.Surface.Canvas;
 				using SKPaint paint = new SKPaint { Color = SKColors.White, TextSize = 80, IsStroke = false, TextAlign = SKTextAlign.Center };
 				canvas.DrawText("You won!", (float)MainView.ActualWidth / 2, (float)MainView.ActualHeight / 2, paint);
+			}
+
+			if (GameEngine.DidLose)
+			{
+				var canvas = e.Surface.Canvas;
+				using SKPaint paint = new SKPaint { Color = SKColors.White, TextSize = 80, IsStroke = false, TextAlign = SKTextAlign.Center };
+				canvas.DrawText("You lost!", (float)MainView.ActualWidth / 2, (float)MainView.ActualHeight / 2, paint);
 			}
 
 			if (hoveredTile is not null) // DEBUG
@@ -163,14 +170,14 @@ namespace WpfUI
 				}
 			}
 
-			if (!GameEngine.IsTreasureFound)
+			if (!GameEngine.DidWin && !GameEngine.DidLose)
 			{
 				var dir = HandleControls(e.Key);
 				GameEngine.HandleMoveRequest(dir, false);
 				this.Title = "Bombs: " + GameEngine.Player.Inventory.Count.ToString();
-
-				this.MainView.InvalidateVisual();
 			}
+
+			this.MainView.InvalidateVisual();
 		}
 
 		Direction HandleControls(Key key)
