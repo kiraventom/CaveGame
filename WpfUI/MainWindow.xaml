@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="MainWindow" Height="500" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="ToolWindow">
     <Grid>
         <skia:SKElement Name="MainView"/>
     </Grid>

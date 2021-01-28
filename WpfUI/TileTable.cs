@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CaveGenerator;
+﻿using CaveGenerator;
 using SkiaSharp;
+using System.Collections.Generic;
 
 namespace WpfUI
 {
 	static class TileTable
 	{
-		readonly static SKBitmap fog = SKBitmap.Decode(Properties.Resources.FogTile);
-		readonly static SKBitmap obstacle = SKBitmap.Decode(Properties.Resources.ObstacleTile);
-		readonly static SKBitmap bombOff = SKBitmap.Decode(Properties.Resources.BombOffTile);
-		readonly static SKBitmap bombOn = SKBitmap.Decode(Properties.Resources.BombOnTile);
-		readonly static SKBitmap free = SKBitmap.Decode(Properties.Resources.FreeTile);
-		readonly static SKBitmap player = SKBitmap.Decode(Properties.Resources.PlayerTile);
-		readonly static SKBitmap treasure = SKBitmap.Decode(Properties.Resources.TreasureTile);
+		readonly static SKBitmap fog		= SKBitmap.Decode(Properties.Resources.FogTile);
+		readonly static SKBitmap obstacle	= SKBitmap.Decode(Properties.Resources.ObstacleTile);
+		readonly static SKBitmap bombOff	= SKBitmap.Decode(Properties.Resources.BombOffTile);
+		readonly static SKBitmap bombOn		= SKBitmap.Decode(Properties.Resources.BombOnTile);
+		readonly static SKBitmap free		= SKBitmap.Decode(Properties.Resources.FreeTile);
+		readonly static SKBitmap player		= SKBitmap.Decode(Properties.Resources.PlayerTile);
+		readonly static SKBitmap treasure	= SKBitmap.Decode(Properties.Resources.TreasureTile);
 
 		public static Queue<SKBitmap> GetTileLayers(Tile tile)
 		{

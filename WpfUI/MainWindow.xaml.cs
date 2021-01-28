@@ -2,8 +2,10 @@
 using SkiaSharp;
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace WpfUI
 {
@@ -16,18 +18,72 @@ namespace WpfUI
 			this.MainView.PaintSurface += this.MainView_PaintSurface;
 			EventManager.RegisterClassHandler(typeof(Window), Keyboard.KeyDownEvent, new KeyEventHandler(GameTick), true);
 			this.MainView.MouseDown += this.MainView_MouseDown;
+
+			this.MainView.MouseMove += this.MainView_MouseMove;
+			for (int x = 0; x < highlighter.Width; ++x)
+				for (int y = 0; y < highlighter.Height; ++y) 
+					highlighter.SetPixel(x, y, new SKColor(255, 255, 255, 64));
+
+			uint tileSide = TileSize.Width;
 		}
 
+		[DllImport("User32.dll")]
+		public static extern uint GetDpiForWindow(IntPtr hwnd);
+
+		static double scale = 1.0;
+		static CaveGenerator.Size TileSize = new CaveGenerator.Size(30, 30);
 		Cave Cave => GameEngine.Cave;
+		
+		Tile hoveredTile;
+		SKBitmap highlighter = new SKBitmap((int)TileSize.Width, (int)TileSize.Height); // DEBUG
+
+		uint easter_openMapCounter = 0;
+		uint easter_getBombsCounter = 0;
+
+		private void MainView_MouseMove(object sender, MouseEventArgs e)
+		{
+			var point = e.MouseDevice.GetPosition(this.MainView);
+			point = new Point(point.X * scale, point.Y * scale);
+			int tileX = (int)Math.Floor(point.X / TileSize.Width);
+			int tileY = (int)Math.Floor((Cave.Size.Height * TileSize.Height - point.Y) / TileSize.Height);
+
+			if (tileX >= Cave.Size.Width || tileX < 0 || tileY >= Cave.Size.Height || tileY < 0)
+				return;
+
+			if (hoveredTile != Cave.Tiles[tileX, tileY])
+			{
+				if (hoveredTile is not null)
+					ChangeTracker.ReportChange(hoveredTile.Location);
+				ChangeTracker.ReportChange(Cave.Tiles[tileX, tileY].Location);
+				hoveredTile = Cave.Tiles[tileX, tileY];
+				this.MainView.InvalidateVisual();
+			}
+		}
 
 		private void MainWindow_Loaded(object sender, RoutedEventArgs e)
 		{
+			var wih = new WindowInteropHelper(GetWindow(this));
+			IntPtr hWnd = wih.Handle;
+			uint dpi = GetDpiForWindow(hWnd);
+			scale = dpi switch
+			{
+				96 => 1.0,
+				120 => 1.25,
+				144 => 1.50,
+				168 => 1.75,
+				0 => throw new Exception("GetDpiForWindow returned 0"),
+
+				_ => 1.0
+			};
+
 			GameEngine.Initialize();
 			var windowSize = ToWindowSize(Cave.Size);
 			this.Width = windowSize.Width;
 			this.Height = windowSize.Height;
 
 			DrawCave(Cave);
+
+			this.Top = 0;
 		}
 
 		private void MainView_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
@@ -45,15 +101,25 @@ namespace WpfUI
 				using SKPaint paint = new SKPaint { Color = SKColors.White, TextSize = 80, IsStroke = false, TextAlign = SKTextAlign.Center };
 				canvas.DrawText("You won!", (float)MainView.ActualWidth / 2, (float)MainView.ActualHeight / 2, paint);
 			}
+
+			if (hoveredTile is not null) // DEBUG
+			{
+				var layers = TileTable.GetTileLayers(hoveredTile);
+				var windowLoc = ToWindowLocation(hoveredTile.Location, Cave.Size);
+				layers.Enqueue(highlighter);
+
+				var canvas = e.Surface.Canvas;
+				while (layers.Any())
+				{
+					var layer = layers.Dequeue();
+					canvas.DrawBitmap(layer, new SKRect(windowLoc.X, windowLoc.Y, windowLoc.X + TileSize.Width, windowLoc.Y + TileSize.Height));
+				}
+			}
 		}
 
 		private void MainView_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			var point = e.MouseDevice.GetPosition(this.MainView);
-			int tileX = (int)Math.Floor(point.X / TileSize.Width);
-			int tileY = (int)Math.Floor((MainView.ActualHeight - point.Y) / TileSize.Height) - 1;
-
-			Tile tile = Cave.Tiles[tileX, tileY];
+			Tile tile = hoveredTile;
 
 			var dirs = new[] { Direction.Left, Direction.Up, Direction.Right, Direction.Down };
 			foreach (var dir in dirs)
@@ -75,6 +141,26 @@ namespace WpfUI
 				GameEngine.Initialize();
 				DrawCave(Cave);
 				return;
+			}
+
+			if (e.Key == Key.F9)
+			{
+				++easter_openMapCounter;
+				if (easter_openMapCounter == 3)
+				{
+					GameEngine.Easter_OpenMap();
+					easter_openMapCounter = 0;
+				}
+			}
+
+			if (e.Key == Key.F8)
+			{
+				++easter_getBombsCounter;
+				if (easter_getBombsCounter == 3)
+				{
+					GameEngine.Easter_GetBombs();
+					easter_getBombsCounter = 0;
+				}
 			}
 
 			if (!GameEngine.IsTreasureFound)
@@ -135,9 +221,7 @@ namespace WpfUI
 
 		static CaveGenerator.Size ToWindowSize(CaveGenerator.Size size)
 		{
-			return new CaveGenerator.Size(size.Width * (TileSize.Width + 2), size.Height * (TileSize.Height + 2));
+			return new CaveGenerator.Size((uint)(size.Width * (TileSize.Width + 1) / scale), (uint)(size.Height * (TileSize.Height + 2) / scale));
 		}
-
-		static CaveGenerator.Size TileSize = new CaveGenerator.Size(30, 30);
 	}
 }
