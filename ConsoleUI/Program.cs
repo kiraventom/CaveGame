@@ -48,7 +48,7 @@ namespace ConsoleUI
 					}
 				}
 
-				if (!GameEngine.IsTreasureFound)
+				if (!GameEngine.DidWin && !GameEngine.DidLose)
 				{
 					var dir = HandleControls(cki);
 					GameEngine.HandleMoveRequest(dir, cki.Modifiers.HasFlag(ConsoleModifiers.Shift));
@@ -61,11 +61,18 @@ namespace ConsoleUI
 					}
 				}
 
-				if (GameEngine.IsTreasureFound)
+				if (GameEngine.DidWin)
 				{
 					string congratsMsg = "You won!";
 					Console.SetCursorPosition(30 - congratsMsg.Length / 2, 15);
 					Console.Write(congratsMsg);
+				}
+				
+				if (GameEngine.DidLose)
+				{
+					string sorryMsg = "You lost!";
+					Console.SetCursorPosition(30 - sorryMsg.Length / 2, 15);
+					Console.Write(sorryMsg);
 				}
 			}
 		}
