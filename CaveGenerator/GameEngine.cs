@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace CaveGenerator
 {
@@ -14,6 +15,7 @@ namespace CaveGenerator
 			Player = Generator.CreateActor<Player>();
 			Enemies = Generator.CreateActors<Enemy>(0);
 			Bombs = new HashSet<Bomb>();
+			_didLose = false;
 		}
 
 		public static void HandleMoveRequest(Direction direction, bool putBomb = false)
@@ -87,6 +89,40 @@ namespace CaveGenerator
 		public static Player Player { get; private set; }
 		public static IEnumerable<Enemy> Enemies { get; private set; }
 		private static HashSet<Bomb> Bombs { get; set; }
-		public static bool IsTreasureFound => !Cave?.Treasure?.HasTreasure ?? false;
+		public static bool DidWin => !Cave?.Treasure?.HasTreasure ?? false;
+		private static bool _didLose = false;
+		public static bool DidLose
+		{
+			get
+			{
+				if (_didLose)
+					return true;
+
+				// если у игрока есть бомбы
+				if (Player?.Inventory?.Any() ?? true) 
+					return false;
+
+				// если есть несобранная бомба в зоне видимости
+				if (Bombs.Any(b => b.TileWithBomb.IsVisible))
+					return false;
+
+				// если есть неоткрытая пустая клетка рядом с открытой
+				for (int x = 1; x < Cave.Size.Width - 1; ++x)
+				{
+					for (int y = 1; y < Cave.Size.Height - 1; ++y)
+					{
+						Tile tile = Cave.Tiles[x, y];
+						if (tile.IsVisible && !tile.IsObstacle && tile.Neighbours.Any(n => !n.IsVisible))
+							return false;
+					}
+				}
+
+				Cave.Treasure.IsVisible = true;
+				ChangeTracker.ReportChange(Cave.Treasure.Location);
+				_didLose = true;
+
+				return true;
+			}
+		}
 	}
 }
