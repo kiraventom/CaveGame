@@ -20,25 +20,21 @@ namespace WpfUI
 			this.MainView.MouseDown += this.MainView_MouseDown;
 
 			this.MainView.MouseMove += this.MainView_MouseMove;
-			for (int x = 0; x < highlighter.Width; ++x)
-				for (int y = 0; y < highlighter.Height; ++y) 
-					highlighter.SetPixel(x, y, new SKColor(255, 255, 255, 64));
 
 			uint tileSide = TileSize.Width;
 		}
 
 		[DllImport("User32.dll")]
-		public static extern uint GetDpiForWindow(IntPtr hwnd);
+		private static extern uint GetDpiForWindow(IntPtr hwnd);
 
-		static double scale = 1.0;
-		static CaveGenerator.Size TileSize = new CaveGenerator.Size(30, 30);
-		Cave Cave => GameEngine.Cave;
-		
-		Tile hoveredTile;
-		SKBitmap highlighter = new SKBitmap((int)TileSize.Width, (int)TileSize.Height); // DEBUG
+		internal static CaveGenerator.Size TileSize = new CaveGenerator.Size(30, 30);
+		internal static Tile hoveredTile { get; private set; }
+		internal static bool facingRight = true;
 
-		uint easter_openMapCounter = 0;
-		uint easter_getBombsCounter = 0;
+		private static double scale = 1.0;
+		private Cave Cave => GameEngine.Cave;
+		private uint easter_openMapCounter = 0;
+		private uint easter_getBombsCounter = 0;
 
 		private void MainView_MouseMove(object sender, MouseEventArgs e)
 		{
@@ -101,26 +97,12 @@ namespace WpfUI
 				using SKPaint paint = new SKPaint { Color = SKColors.White, TextSize = 80, IsStroke = false, TextAlign = SKTextAlign.Center };
 				canvas.DrawText("You won!", (float)MainView.ActualWidth / 2, (float)MainView.ActualHeight / 2, paint);
 			}
-
+			else
 			if (GameEngine.DidLose)
 			{
 				var canvas = e.Surface.Canvas;
 				using SKPaint paint = new SKPaint { Color = SKColors.White, TextSize = 80, IsStroke = false, TextAlign = SKTextAlign.Center };
 				canvas.DrawText("You lost!", (float)MainView.ActualWidth / 2, (float)MainView.ActualHeight / 2, paint);
-			}
-
-			if (hoveredTile is not null) // DEBUG
-			{
-				var layers = TileTable.GetTileLayers(hoveredTile);
-				var windowLoc = ToWindowLocation(hoveredTile.Location, Cave.Size);
-				layers.Enqueue(highlighter);
-
-				var canvas = e.Surface.Canvas;
-				while (layers.Any())
-				{
-					var layer = layers.Dequeue();
-					canvas.DrawBitmap(layer, new SKRect(windowLoc.X, windowLoc.Y, windowLoc.X + TileSize.Width, windowLoc.Y + TileSize.Height));
-				}
 			}
 		}
 
@@ -173,6 +155,9 @@ namespace WpfUI
 			if (!GameEngine.DidWin && !GameEngine.DidLose)
 			{
 				var dir = HandleControls(e.Key);
+				if (dir == Direction.Right || dir == Direction.Left)
+					facingRight = dir == Direction.Right;
+
 				GameEngine.HandleMoveRequest(dir, false);
 				this.Title = "Bombs: " + GameEngine.Player.Inventory.Count.ToString();
 			}

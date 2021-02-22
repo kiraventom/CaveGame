@@ -15,6 +15,7 @@ namespace CaveGenerator
 			Player = Generator.CreateActor<Player>();
 			Enemies = Generator.CreateActors<Enemy>(0);
 			Bombs = new HashSet<Bomb>();
+			_didLose = false;
 		}
 
 		public static void HandleMoveRequest(Direction direction, bool putBomb = false)
@@ -89,10 +90,14 @@ namespace CaveGenerator
 		public static IEnumerable<Enemy> Enemies { get; private set; }
 		private static HashSet<Bomb> Bombs { get; set; }
 		public static bool DidWin => !Cave?.Treasure?.HasTreasure ?? false;
+		private static bool _didLose = false;
 		public static bool DidLose
 		{
 			get
 			{
+				if (_didLose)
+					return true;
+
 				// если у игрока есть бомбы
 				if (Player?.Inventory?.Any() ?? true) 
 					return false;
@@ -114,6 +119,8 @@ namespace CaveGenerator
 
 				Cave.Treasure.IsVisible = true;
 				ChangeTracker.ReportChange(Cave.Treasure.Location);
+				_didLose = true;
+
 				return true;
 			}
 		}

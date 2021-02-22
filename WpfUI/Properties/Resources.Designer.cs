@@ -113,9 +113,19 @@ namespace WpfUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] PlayerTile {
+        internal static byte[] PlayerLeftTile {
             get {
-                object obj = ResourceManager.GetObject("PlayerTile", resourceCulture);
+                object obj = ResourceManager.GetObject("PlayerLeftTile", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] PlayerRightTile {
+            get {
+                object obj = ResourceManager.GetObject("PlayerRightTile", resourceCulture);
                 return ((byte[])(obj));
             }
         }
